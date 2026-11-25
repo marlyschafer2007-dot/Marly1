@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#172b40">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="StudyMate">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <title>StudyMate</title>
+  <style>
+    :root{--navy:#172b40;--blue:#315d83;--bg:#f4f6f8;--card:#fff;--muted:#6c7885;--line:#e4e9ee}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:#1e2b38;font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    header{background:var(--navy);color:white;padding:calc(20px + env(safe-area-inset-top)) 20px 24px;border-radius:0 0 24px 24px}
+    header h1{margin:0;font-size:25px} header p{margin:7px 0 0;color:#d1dbe5;font-size:14px}
+    main{max-width:680px;margin:auto;padding:18px 16px calc(95px + env(safe-area-inset-bottom))}
+    .welcome{font-size:22px;font-weight:700;margin:5px 0 16px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .tile,.panel,.note{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:16px}
+    .tile{min-height:112px;text-align:left;color:inherit;cursor:pointer}
+    .tile .emoji{font-size:24px;display:block;margin-bottom:10px}.tile strong{display:block}.muted{color:var(--muted);font-size:13px}
+    .panel{margin-top:14px}.panel h2{font-size:18px;margin:0 0 12px}
+    label{display:block;font-size:13px;font-weight:600;margin:12px 0 6px}
+    input,textarea,select{width:100%;border:1px solid #d9e0e7;border-radius:11px;padding:12px;font:inherit;background:white;color:#1e2b38}
+    textarea{resize:vertical;min-height:110px}
+    button{border:0;border-radius:12px;padding:12px 15px;background:var(--blue);color:white;font:600 15px inherit;cursor:pointer}
+    button.secondary{background:#eaf0f5;color:var(--navy)} button.danger{background:#fff0f0;color:#a12b2b}
+    .full{width:100%;margin-top:12px}.tabs{position:fixed;bottom:0;left:0;right:0;background:#ffffffed;backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;justify-content:center;padding:8px 8px calc(8px + env(safe-area-inset-bottom));z-index:5}
+    .tabs button{background:transparent;color:var(--muted);flex:1;max-width:220px;padding:9px 4px;font-size:13px}.tabs button.active{color:var(--blue);background:#edf3f8}
+    .hidden{display:none!important}.note{margin-top:10px}.note h3{margin:0 0 6px;font-size:16px}.note p{white-space:pre-wrap;margin:0 0 12px}
+    .row{display:flex;gap:8px;align-items:center}.row>*{flex:1}
+    .chatlog{display:flex;flex-direction:column;gap:10px;margin:12px 0}.bubble{padding:11px 13px;border-radius:14px;max-width:92%;white-space:pre-wrap;line-height:1.4}.mine{align-self:flex-end;background:#e5eef6}.theirs{align-self:flex-start;background:#f0f2f4}
+    .hint{background:#fff8e8;border:1px solid #f0dfb6;border-radius:12px;padding:12px;font-size:13px;color:#67532c;line-height:1.4}
+  </style>
+</head>
+<body>
+<header><h1>StudyMate 🤍</h1><p>Your personal study space</p></header>
+<main>
+  <section id="home">
+    <div class="welcome">Hoi! Wat gaan we leren?</div>
+    <div class="grid">
+      <button class="tile" onclick="show('ai')"><span class="emoji">🤖</span><strong>AI-assistent</strong><span class="muted">Stel je vragen</span></button>
+      <button class="tile" onclick="show('notes')"><span class="emoji">📝</span><strong>Mijn notities</strong><span class="muted">Bewaar je aantekeningen</span></button>
+    </div>
+    <div class="panel"><h2>Jouw studieplek</h2><p class="muted">Maak notities per vak en gebruik de AI-assistent om uitleg te krijgen, samen te vatten of ideeën te bespreken.</p></div>
+  </section>
+
+  <section id="ai" class="hidden">
+    <div class="panel">
+      <h2>AI-assistent</h2>
+      <p class="muted">Stel vragen over school of andere onderwerpen.</p>
+      <div id="chatlog" class="chatlog"><div class="bubble theirs">Hoi! Ik ben je StudyMate-assistent. De AI-koppeling moet nog veilig worden ingesteld. Je kunt de chat alvast bekijken.</div></div>
+      <label for="question">Jouw vraag</label>
+      <textarea id="question" placeholder="Bijvoorbeeld: Leg breuken eenvoudig uit..."></textarea>
+      <button class="full" onclick="sendQuestion()">Verstuur vraag</button>
+      <p class="muted">AI-antwoorden werken zodra een beveiligde serverkoppeling is ingesteld. Zet nooit een geheime API-sleutel in deze websitecode.</p>
+    </div>
+  </section>
+
+  <section id="notes" class="hidden">
+    <div class="panel">
+      <h2>Nieuwe notitie</h2>
+      <label for="title">Titel</label><input id="title" placeholder="Bijvoorbeeld: Engelse woordjes">
+      <label for="subject">Vak</label>
+      <select id="subject"><option>Algemeen</option><option>Nederlands</option><option>Engels</option><option>Wiskunde</option><option>Geschiedenis</option><option>Biologie</option><option>Anders</option></select>
+      <label for="body">Notitie</label><textarea id="body" placeholder="Schrijf hier je aantekeningen..."></textarea>
+      <button class="full" onclick="saveNote()">Notitie opslaan</button>
+    </div>
+    <div class="panel"><h2>Opgeslagen notities</h2><div id="notesList" class="muted">Nog geen notities.</div></div>
+  </section>
+</main>
+<nav class="tabs">
+  <button id="tab-home" class="active" onclick="show('home')">⌂<br>Home</button>
+  <button id="tab-ai" onclick="show('ai')">✦<br>AI-chat</button>
+  <button id="tab-notes" onclick="show('notes')">▤<br>Notities</button>
+</nav>
+<script>
+const KEY='studymate-notes-v1';
+function show(name){
+  ['home','ai','notes'].forEach(x=>document.getElementById(x).classList.toggle('hidden',x!==name));
+  ['home','ai','notes'].forEach(x=>document.getElementById('tab-'+x).classList.toggle('active',x===name));
+  if(name==='notes') renderNotes();
+}
+function getNotes(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch{return []}}
+function saveNote(){
+  const title=document.getElementById('title').value.trim(), body=document.getElementById('body').value.trim(), subject=document.getElementById('subject').value;
+  if(!title||!body){alert('Vul een titel en notitie in.');return}
+  const notes=getNotes(); notes.unshift({id:Date.now(),title,body,subject,created:new Date().toLocaleDateString('nl-NL')});
+  localStorage.setItem(KEY,JSON.stringify(notes)); document.getElementById('title').value='';document.getElementById('body').value='';
+  renderNotes(); alert('Je notitie is opgeslagen op dit apparaat.');
+}
+function renderNotes(){
+  const el=document.getElementById('notesList'), notes=getNotes();
+  if(!notes.length){el.textContent='Nog geen notities.';return}
+  el.innerHTML='';
+  notes.forEach(n=>{
+    const card=document.createElement('article');card.className='note';
+    const h=document.createElement('h3');h.textContent=n.title;
+    const meta=document.createElement('div');meta.className='muted';meta.textContent=n.subject+' · '+n.created;
+    const p=document.createElement('p');p.textContent=n.body;
+    const actions=document.createElement('div');actions.className='row';
+    const edit=document.createElement('button');edit.className='secondary';edit.textContent='Bewerken';edit.onclick=()=>editNote(n.id);
+    const del=document.createElement('button');del.className='danger';del.textContent='Verwijderen';del.onclick=()=>deleteNote(n.id);
+    actions.append(edit,del);card.append(h,meta,p,actions);el.append(card);
+  });
+}
+function editNote(id){
+  const notes=getNotes(), n=notes.find(x=>x.id===id);if(!n)return;
+  document.getElementById('title').value=n.title;document.getElementById('body').value=n.body;document.getElementById('subject').value=n.subject;
+  localStorage.setItem(KEY,JSON.stringify(notes.filter(x=>x.id!==id)));renderNotes();window.scrollTo({top:0,behavior:'smooth'});
+}
+function deleteNote(id){if(!confirm('Deze notitie verwijderen?'))return;localStorage.setItem(KEY,JSON.stringify(getNotes().filter(x=>x.id!==id)));renderNotes()}
+function sendQuestion(){
+  const box=document.getElementById('question'), q=box.value.trim();if(!q)return;
+  const log=document.getElementById('chatlog'), bubble=document.createElement('div');bubble.className='bubble mine';bubble.textContent=q;log.append(bubble);
+  const reply=document.createElement('div');reply.className='bubble theirs';reply.textContent='Je vraag staat klaar. Om echte AI-antwoorden te krijgen, moet de beveiligde AI-server nog gekoppeld worden.';log.append(reply);
+  box.value='';log.scrollIntoView({behavior:'smooth',block:'end'});
+}
+if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+renderNotes();
+</script>
+</body></html>
